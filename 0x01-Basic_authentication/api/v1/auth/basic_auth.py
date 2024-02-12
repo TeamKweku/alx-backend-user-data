@@ -8,6 +8,7 @@ import base64
 import binascii
 from typing import Tuple, TypeVar
 from api.v1.auth.auth import Auth
+from models.user import User
 
 
 class BasicAuth(Auth):
@@ -88,4 +89,29 @@ class BasicAuth(Auth):
                 user = field_match.group('user')
                 password = field_match.group('password')
                 return user, password
-        return None, None  
+        return None, None 
+    
+    def user_object_from_credentials(
+            self,
+            user_email: str,
+            user_pwd: str) -> TypeVar('User'):
+        """
+        Returns the User instance based on his email and password.
+
+        Args:
+            user_email (str): The user's email.
+            user_pwd (str): The user's password.
+
+        Returns:
+            User: The User instance if it's valid, None otherwise.
+        """
+        if type(user_email) == str and type(user_pwd) == str:
+            try:
+                users = User.search({'email': user_email})
+            except Exception:
+                return None
+            if len(users) <= 0:
+                return None
+            if users[0].is_valid_password(user_pwd):
+                return users[0]
+        return None
