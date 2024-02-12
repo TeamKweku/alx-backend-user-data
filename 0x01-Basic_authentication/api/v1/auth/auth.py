@@ -61,3 +61,4 @@ class Auth:
         """
         # Placeholder implementation, always returning None for now
         return None
+
