@@ -7,9 +7,6 @@ from flask import request
 import re
 
 
-User = TypeVar("User")
-
-
 class Auth:
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
@@ -17,22 +14,23 @@ class Auth:
 
         Args:
             path (str): The path to check for authentication requirement.
-            excluded_paths (List[str]): List of paths that are excluded from authentication.
+            excluded_paths (List[str]): List of paths that are
+            excluded from authentication.
 
         Returns:
             bool: True if authentication is required, False otherwise.
         """
-        if path is None or excluded_paths is None or len(excluded_paths) == 0:
-            return True
-
-        # Add a trailing slash to path if not present
-        if not path.endswith("/"):
-            path += "/"
-
-        # Check if path is in excluded_paths
-        if path in excluded_paths:
-            return False
-
+        if path is not None and excluded_paths is not None:
+            for exclusion_path in map(lambda x: x.strip(), excluded_paths):
+                pattern = ""
+                if exclusion_path[-1] == "*":
+                    pattern = "{}.*".format(exclusion_path[0:-1])
+                elif exclusion_path[-1] == "/":
+                    pattern = "{}/*".format(exclusion_path[0:-1])
+                else:
+                    pattern = "{}/*".format(exclusion_path)
+                if re.match(pattern, path):
+                    return False
         return True
 
     def authorization_header(self, request=None) -> str:
@@ -46,10 +44,10 @@ class Auth:
             str: The authorization header value.
         """
         if request is None:
-          return None
-        return request.headers.get('Authorization', None)
+            return None
+        return request.headers.get("Authorization", None)
 
-    def current_user(self, request=None) -> User:
+    def current_user(self, request=None) -> TypeVar("User"):
         """
         Retrieves the current authenticated user.
 
@@ -61,4 +59,3 @@ class Auth:
         """
         # Placeholder implementation, always returning None for now
         return None
-
