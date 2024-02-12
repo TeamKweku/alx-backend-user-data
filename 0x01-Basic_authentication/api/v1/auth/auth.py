@@ -4,9 +4,10 @@ module that implements an Auth class
 """
 from typing import List, TypeVar
 from flask import request
+import re
 
 
-User = TypeVar('User')
+User = TypeVar("User")
 
 
 class Auth:
@@ -21,8 +22,18 @@ class Auth:
         Returns:
             bool: True if authentication is required, False otherwise.
         """
-        # Placeholder implementation, always returning False for now
-        return False
+        if path is None or excluded_paths is None or len(excluded_paths) == 0:
+            return True
+
+        # Add a trailing slash to path if not present
+        if not path.endswith("/"):
+            path += "/"
+
+        # Check if path is in excluded_paths
+        if path in excluded_paths:
+            return False
+
+        return True
 
     def authorization_header(self, request=None) -> str:
         """
