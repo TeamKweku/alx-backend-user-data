@@ -4,7 +4,6 @@ module that implements an Auth class
 """
 from typing import List, TypeVar
 from flask import request
-import re
 
 
 class Auth:
