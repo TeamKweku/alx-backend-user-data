@@ -44,5 +44,4 @@ class Auth:
         Returns:
             TypeVar('User'): The current authenticated user.
         """
-        # Placeholder implementation, always returning None for now
         return None
